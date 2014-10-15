@@ -35,9 +35,20 @@ AppAsset::register($this);
             echo Nav::widget([
                 'options' => ['class' => 'navbar-nav navbar-right'],
                 'items' => [
+                		[
+                		'label' => 'Dropdown',
+                		'items' => [
+                				['label' => 'Level 1 - Dropdown A', 'url' => '#'],
+                				'<li class="divider"></li>',
+                				'<li class="dropdown-header">Dropdown Header</li>',
+                				['label' => 'Level 1 - Dropdown B', 'url' => '#'],
+                		],
+                		],
                     ['label' => 'Home', 'url' => ['/site/index']],
-                    ['label' => 'About', 'url' => ['/site/about']],
-                    ['label' => 'Contact', 'url' => ['/site/contact']],
+                	['label' => 'Estudio', 'url' => ['/estudio/index']],
+                    ['label' => 'Reserva', 'url' => ['/reserva/index']],
+                    ['label' => 'Indisponibilidade', 'url' => ['/indisponibilidade/index']],
+                	['label' => 'Responsavel do Estudio', 'url' => ['/PesponsavelEstudio/index']],
                     Yii::$app->user->isGuest ?
                         ['label' => 'Login', 'url' => ['/site/login']] :
                         ['label' => 'Logout (' . Yii::$app->user->identity->username . ')',
