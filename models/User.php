@@ -2,8 +2,18 @@
 
 namespace app\models;
 
-class User extends \yii\base\Object implements \yii\web\IdentityInterface
-{
+/**
+ * This is the model class for table "user".
+ *
+ * @property integer $id
+ * @property string $login
+ * @property integer $id_role
+ *
+ * @property Reserva[] $reservas
+ * @property ResponsavelEstudio[] $responsavelEstudios
+ * @property Role $idRole
+ */
+class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
     public $id;
     public $username;
     public $password;
@@ -100,4 +110,61 @@ class User extends \yii\base\Object implements \yii\web\IdentityInterface
     {
         return $this->password === $password;
     }
+    
+    /**
+     * @inheritdoc
+     */
+    public static function tableName()
+    {
+    	return 'user';
+    }
+    
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+    	return [
+    	[['login'], 'required'],
+    	[['id_role'], 'integer'],
+    	[['login'], 'string', 'max' => 50]
+    	];
+    }
+    
+    /**
+     * @inheritdoc
+     */
+    public function attributeLabels()
+    {
+    	return [
+    	'id' => 'ID',
+    	'login' => 'Login',
+    	'id_role' => 'Id Role',
+    	];
+    }
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getReservas()
+    {
+    	return $this->hasMany(Reserva::className(), ['by_user' => 'id']);
+    }
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getResponsavelEstudios()
+    {
+    	return $this->hasMany(ResponsavelEstudio::className(), ['id_user' => 'id']);
+    }
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getIdRole()
+    {
+    	return $this->hasOne(Role::className(), ['id' => 'id_role']);
+    }
+    
 }
