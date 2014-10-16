@@ -48,7 +48,7 @@ AppAsset::register($this);
                 	['label' => 'Estudio', 'url' => ['/estudio/index']],
                     ['label' => 'Reserva', 'url' => ['/reserva/index']],
                     ['label' => 'Indisponibilidade', 'url' => ['/indisponibilidade/index']],
-                	['label' => 'Responsavel do Estudio', 'url' => ['/PesponsavelEstudio/index']],
+                	['label' => 'Responsavel do Estudio', 'url' => ['/responsavel-estudio/index']],
                     Yii::$app->user->isGuest ?
                         ['label' => 'Login', 'url' => ['/site/login']] :
                         ['label' => 'Logout (' . Yii::$app->user->identity->username . ')',
