@@ -19,6 +19,7 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
     public $password;
     public $authKey;
     public $accessToken;
+    public $ldap_uid;
 
     private static $users = [
         '100' => [
@@ -65,15 +66,28 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
      * @param  string      $username
      * @return static|null
      */
-    public static function findByUsername($username)
-    {
-        foreach (self::$users as $user) {
-            if (strcasecmp($user['username'], $username) === 0) {
+    public static function findByUsername($username) {
+    	$options = \Yii::$app->params['ldap'];
+    	$dc_string = "dc=" . implode(",dc=",$options['dc']);
+    	$ou_string = "ou=" . implode(",ou=",$options['ou']);
+    	
+    	$connection = ldap_connect($options['host']);
+    	ldap_set_option($connection, LDAP_OPT_PROTOCOL_VERSION, 3);
+    	ldap_set_option($connection, LDAP_OPT_REFERRALS, 0);
+    	
+    	if ($connection) {
+    		$search = ldap_search($connection, $ou_string.','.$dc_string, "uid=".$username);
+    		if (ldap_count_entries($connection, $search) == 1) {
+    			$search_entries = ldap_get_entries($connection, $search);
+    			$user = [
+					'id' => '100',
+					'username' => $username,
+					'ldap_uid' => $search_entries[0]['dn'],
+    			];
                 return new static($user);
-            }
-        }
-
-        return null;
+    		}
+    	}
+    	return null;
     }
 
     /**
@@ -106,9 +120,21 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
      * @param  string  $password password to validate
      * @return boolean if password provided is valid for current user
      */
-    public function validatePassword($password)
-    {
-        return $this->password === $password;
+    public function validatePassword($password) {
+    	$options = \Yii::$app->params['ldap'];
+    	$dc_string = "dc=" . implode(",dc=",$options['dc']);
+    	
+    	$connection = ldap_connect($options['host']);
+    	ldap_set_option($connection, LDAP_OPT_PROTOCOL_VERSION, 3);
+    	ldap_set_option($connection, LDAP_OPT_REFERRALS, 0);
+    	
+    	// Note: in general it is bad to hide errors, however we're checking for an error below
+    	try {
+	    	$bind = @ldap_bind($connection, $this->ldap_uid, $password);
+	    	return $bind;
+    	} catch (Exception $e) {
+    		return FALSE;
+    	}
     }
     
     /**
