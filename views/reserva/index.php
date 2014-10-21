@@ -51,11 +51,20 @@ $events = array();
   $Event->title = 'Testing';
   $Event->start = date('Y-m-d\TH:m:s\Z',strtotime('tomorrow 6am'));
   $events[] = $Event;
+ 
+  
+  
+  $options = array();
+  $options = [
+  		'lang'=>'pt',
+  ];
 
-
+  
+  
   ?>
 
   <?= \yii2fullcalendar\yii2fullcalendar::widget(array(
+  		'clientOptions'=> $options,
       	'events'=> $events
   ));
 ?>
