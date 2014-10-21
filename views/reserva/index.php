@@ -57,6 +57,7 @@ $events = array();
   $options = array();
   $options = [
   		'lang'=>'pt',
+  		'defaultView' =>'agendaWeek'
   ];
 
   
