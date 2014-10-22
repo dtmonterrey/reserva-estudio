@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use yii\web\JsExpression;
 
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -47,19 +48,7 @@ $events = array();
   $Event->start = date('Y-m-d\TH:m:s\Z');
   $events[] = $Event;
 
-  $Event = new \yii2fullcalendar\models\Event();
-  $Event->id = 2;
-  $Event->title = 'Testing';
-  $Event->start = date('Y-m-d\TH:m:s\Z',strtotime('tomorrow 6am'));
-  $events[] = $Event;
- 
-  $events=array();
-  
-  	$Event-> title= 'Meeting';
-  	$Event -> start= '2014-09-30T10:00:00';
-  	$Event -> end= '2014-09-30T12:00:00';
-  
-        		
+  $Jsclick = "function(date, jsEvent, view){alert('xpto');}";
         
   $options = array();
   $options = [
@@ -73,13 +62,12 @@ $events = array();
   		'defaultView'=> 'agendaWeek',
   		'firstDay'=>'1' ,
   		'Duration'=> '01:00:00',
-  		'height'=>' 525',
+  		'height'=>525,
   		'allDaySlot'=> false,
   		'editable'=> true,
   		'selectable' => true,
   		'selectHelper'=> true,
-  		'select'=>' function(start, end)xispe(start, end)',
-  		'dayClick'=>' function(date, jsEvent, view) teste(date, jsEvent, view)'
+  		'dayClick'=> new JsExpression($Jsclick)
   ];
 
   
@@ -93,7 +81,10 @@ $events = array();
 ?>
 
 
+
+
 </div>
+
     
     
 
