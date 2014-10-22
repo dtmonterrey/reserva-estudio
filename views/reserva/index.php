@@ -73,13 +73,17 @@ $events = array();
   		'defaultView'=> 'agendaWeek',
   		'firstDay'=>'1' ,
   		'Duration'=> '01:00:00',
-  		'height'=>' 525',
+  		'height'=>513,
   		'allDaySlot'=> false,
   		'editable'=> true,
   		'selectable' => true,
   		'selectHelper'=> true,
   		'select'=>' function(start, end)xispe(start, end)',
   		'dayClick'=>' function(date, jsEvent, view) teste(date, jsEvent, view)'
+
+  		
+  
+  		
   ];
 
   
