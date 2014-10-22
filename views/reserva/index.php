@@ -68,12 +68,6 @@ $events = array();
   		'clientOptions'=> $options,
       	'events'=> $events
   ));
-  
-  
- 
- 
-  
-  
 ?>
 
 
