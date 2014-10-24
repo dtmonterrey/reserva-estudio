@@ -70,6 +70,7 @@ class ReservaController extends Controller
             ]);
         }
     }
+    
 
     /**
      * Updates an existing reserva model.

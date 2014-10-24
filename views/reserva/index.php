@@ -11,7 +11,7 @@ $this->title = 'Reservas';
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
-<div class="reserva-index">
+ <div class="reserva-index"> 
 
     <h1><?= Html::encode($this->title) ?></h1>
 
@@ -37,7 +37,7 @@ $this->params['breadcrumbs'][] = $this->title;
     ]); ?>
     
     
-    <div>
+    <div> 
 <?php 
 
 $events = array();
@@ -47,19 +47,9 @@ $events = array();
   $Event->title = 'Testing';
   $Event->start = date('Y-m-d\TH:m:s\Z');
   $events[] = $Event;
-
-  $Event = new \yii2fullcalendar\models\Event();
-  $Event->id = 2;
-  $Event->title = 'Testing';
-  $Event->start = date('Y-m-d\TH:m:s\Z',strtotime('tomorrow 6am'));
-  $events[] = $Event;
+  
+  
  
-  $events=array();
-  
-  	$Event-> title= 'Meeting';
-  	$Event -> start= '2014-09-30T10:00:00';
-  	$Event -> end= '2014-09-30T12:00:00';
-  
   
   $JsSelect= "function(start, end) {	var title = prompt('Event Title:');
 		 									var eventData;
@@ -74,6 +64,22 @@ $events = array();
 											$('#reservaCal').fullCalendar('unselect');
 											}";
         
+
+		
+  		 $JsSelect= "function(start, end) {	var title = prompt('Event Title:');
+		 									var eventData;
+		 									if (title) {
+		 						    		eventData = {
+		 						                title: title,
+		 						                start: start,
+		 						                end: end
+		 						            };
+											$('#reservaCal').fullCalendar('renderEvent', eventData, true); // stick? = true
+											}
+											$('#reservaCal').fullCalendar('unselect');
+											}";
+  		 
+
   $options = array();
   $options = [
   		'lang'=>'pt',
@@ -91,12 +97,7 @@ $events = array();
   		'editable'=> true,
   		'selectable' => true,
   		'selectHelper'=> true,
-  		'select'=>' function(start, end)xispe(start, end)',
-  		'dayClick'=>' function(date, jsEvent, view) teste(date, jsEvent, view)',
         'select' => new JsExpression($JsSelect)
-  		
-  
-  		
   ];
 
   
@@ -110,7 +111,10 @@ $events = array();
 ?>
 
 
+
+
 </div>
+
     
     
 
