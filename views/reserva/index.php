@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use yii\web\JsExpression;
 
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -59,7 +60,19 @@ $events = array();
   	$Event -> start= '2014-09-30T10:00:00';
   	$Event -> end= '2014-09-30T12:00:00';
   
-        		
+  
+  $JsSelect= "function(start, end) {	var title = prompt('Event Title:');
+		 									var eventData;
+		 									if (title) {
+		 						    		eventData = {
+		 						                title: title,
+		 						                start: start,
+		 						                end: end
+		 						            };
+											$('#reservaCal').fullCalendar('renderEvent', eventData, true); // stick? = true
+											}
+											$('#reservaCal').fullCalendar('unselect');
+											}";
         
   $options = array();
   $options = [
@@ -79,8 +92,8 @@ $events = array();
   		'selectable' => true,
   		'selectHelper'=> true,
   		'select'=>' function(start, end)xispe(start, end)',
-  		'dayClick'=>' function(date, jsEvent, view) teste(date, jsEvent, view)'
-
+  		'dayClick'=>' function(date, jsEvent, view) teste(date, jsEvent, view)',
+        'select' => new JsExpression($JsSelect)
   		
   
   		
