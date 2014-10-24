@@ -11,7 +11,7 @@ $this->title = 'Reservas';
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
-<div class="reserva-index">
+ <div class="reserva-index"> 
 
     <h1><?= Html::encode($this->title) ?></h1>
 
@@ -37,7 +37,7 @@ $this->params['breadcrumbs'][] = $this->title;
     ]); ?>
     
     
-    <div>
+    <div> 
 <?php 
 
 $events = array();
@@ -47,9 +47,24 @@ $events = array();
   $Event->title = 'Testing';
   $Event->start = date('Y-m-d\TH:m:s\Z');
   $events[] = $Event;
-
-  $Jsclick = "function(date, jsEvent, view){alert('xpto');}";
-        
+  
+  
+ 
+  
+		
+  		 $JsSelect= "function(start, end) {	var title = prompt('Event Title:');
+		 									var eventData;
+		 									if (title) {
+		 						    		eventData = {
+		 						                title: title,
+		 						                start: start,
+		 						                end: end
+		 						            };
+											$('#reservaCal').fullCalendar('renderEvent', eventData, true); // stick? = true
+											}
+											$('#reservaCal').fullCalendar('unselect');
+											}";
+  		 
   $options = array();
   $options = [
   		'lang'=>'pt',
@@ -67,7 +82,7 @@ $events = array();
   		'editable'=> true,
   		'selectable' => true,
   		'selectHelper'=> true,
-  		'dayClick'=> new JsExpression($Jsclick)
+  		'select'=> new JsExpression($JsSelect)
   ];
 
   
