@@ -89,3 +89,18 @@ a.desc:after {
     padding: 10px 20px;
     margin: 0 0 15px 0;
 }
+
+/*========= Own CSS ======================*/
+
+.eventoPendente {
+	background-color: #F63 !important;
+	border: 1px solid #F60 !important;
+}
+.eventoAprovado {
+	background-color: #393 !important;
+	border: 1px solid #363 !important;
+}
+
+/*.fc-sun {
+	background-color: #900 !important;
+}*/
