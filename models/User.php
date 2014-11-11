@@ -78,6 +78,16 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
     	if ($connection) {
     		$search = ldap_search($connection, $ou_string.','.$dc_string, "uid=".$username);
     		if (ldap_count_entries($connection, $search) == 1) {
+    			// ver se este user já existe na base de dados
+    			$dbUsers = User::find()->where(['login'=>$username])->all();
+    			if (count($dbUsers) > 0) {	// já existe, atualizamos
+    				$dbUser = $dbUsers[0];
+    				$user = new User();
+    				$user->id = $dbUser->id;
+    				$user->login = $dbUser->login;
+    				$user->id_role = $dbUser->id_role;
+    				$user->save();
+    			}
     			$search_entries = ldap_get_entries($connection, $search);
     			$user = [
 					'id' => '100',
