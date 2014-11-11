@@ -55,14 +55,24 @@ class ReservaController extends Controller
 	
 	
 	 /**
-     * Pedido 
+     * Insere Reserva 
      */
-    public function actionTeste($xispe)
+    public function actionNovareserva($dados)
+    {	
+		$qry = new \app\models\Role();
+		$qry->role = $dados;
+		$qry->save();
+    }
+    
+    /**
+     * Update Reserva
+     */
+    public function actionActualizareserva($dados, $idf)
     {
-		$xpto = new \app\models\Role();
-		$xpto->role = $xispe;
-		$xpto->save();
-		
+    	$qry = new \app\models\Role();
+		$qry = $qry->findOne($idf);
+		$qry->role = $dados;
+		$qry->update();
     }
 
     /**
