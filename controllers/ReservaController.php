@@ -52,6 +52,18 @@ class ReservaController extends Controller
             'model' => $this->findModel($id),
         ]);
     }
+	
+	
+	 /**
+     * Pedido 
+     */
+    public function actionTeste($xispe)
+    {
+		$xpto = new \app\models\Role();
+		$xpto->role = $xispe;
+		$xpto->save();
+		
+    }
 
     /**
      * Creates a new reserva model.
@@ -70,6 +82,7 @@ class ReservaController extends Controller
             ]);
         }
     }
+    
 
     /**
      * Updates an existing reserva model.

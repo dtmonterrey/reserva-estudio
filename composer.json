@@ -17,13 +17,15 @@
         "php": ">=5.4.0",
         "yiisoft/yii2": "*",
         "yiisoft/yii2-bootstrap": "*",
-        "yiisoft/yii2-swiftmailer": "*"
+        "yiisoft/yii2-swiftmailer": "*",
+		"philippfrenzel/yii2fullcalendar": "dev-master"
     },
     "require-dev": {
         "yiisoft/yii2-codeception": "*",
         "yiisoft/yii2-debug": "*",
         "yiisoft/yii2-gii": "*",
-        "yiisoft/yii2-faker": "*"
+        "yiisoft/yii2-faker": "*",
+		"philippfrenzel/yii2fullcalendar": "dev-master"
     },
     "config": {
         "process-timeout": 1800

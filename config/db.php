@@ -6,4 +6,5 @@ return [
     'username' => 'reserva',
     'password' => 'reserva',
     'charset' => 'utf8',
+
 ];

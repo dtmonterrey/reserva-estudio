@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "865ce4d9e6c2c445e707b268f070dd3f",
+    "hash": "2d099e898abfcd550458f7e001fa0d46",
     "packages": [
         {
             "name": "bower-asset/bootstrap",
@@ -101,17 +101,42 @@
             ]
         },
         {
-            "name": "bower-asset/jquery.inputmask",
-            "version": "3.1.32",
+            "name": "bower-asset/jquery-ui",
+            "version": "1.11.2",
             "source": {
                 "type": "git",
-                "url": "https://github.com/RobinHerbots/jquery.inputmask.git",
-                "reference": "bb776eb7e7be594fa77d5598e6f89d96029a8bac"
+                "url": "https://github.com/components/jqueryui.git",
+                "reference": "396781474d936959061271505f506b78398fe6a2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/RobinHerbots/jquery.inputmask/zipball/bb776eb7e7be594fa77d5598e6f89d96029a8bac",
-                "reference": "bb776eb7e7be594fa77d5598e6f89d96029a8bac",
+                "url": "https://api.github.com/repos/components/jqueryui/zipball/396781474d936959061271505f506b78398fe6a2",
+                "reference": "396781474d936959061271505f506b78398fe6a2",
+                "shasum": ""
+            },
+            "require": {
+                "bower-asset/jquery": ">=1.6"
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": [
+                    "jquery-ui.js"
+                ],
+                "bower-asset-ignore": []
+            }
+        },
+        {
+            "name": "bower-asset/jquery.inputmask",
+            "version": "3.1.33",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/RobinHerbots/jquery.inputmask.git",
+                "reference": "0c6ce85c1bc12e81ecb0df62fbc62db116b7b53d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/RobinHerbots/jquery.inputmask/zipball/0c6ce85c1bc12e81ecb0df62fbc62db116b7b53d",
+                "reference": "0c6ce85c1bc12e81ecb0df62fbc62db116b7b53d",
                 "shasum": ""
             },
             "require": {
@@ -310,6 +335,51 @@
                 "html"
             ],
             "time": "2013-11-30 08:25:19"
+        },
+        {
+            "name": "philippfrenzel/yii2fullcalendar",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/philippfrenzel/yii2fullcalendar.git",
+                "reference": "0fb1c268831b4d6d5a03c95062472666dad0c1c7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/philippfrenzel/yii2fullcalendar/zipball/0fb1c268831b4d6d5a03c95062472666dad0c1c7",
+                "reference": "0fb1c268831b4d6d5a03c95062472666dad0c1c7",
+                "shasum": ""
+            },
+            "require": {
+                "yiisoft/yii2": "*",
+                "yiisoft/yii2-jui": "*"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "yii2fullcalendar\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT License"
+            ],
+            "authors": [
+                {
+                    "name": "Philipp Frenzel",
+                    "email": "philipp@frenzel.net",
+                    "homepage": "http://www.frenzel.net/",
+                    "role": "Author Version Yii2"
+                }
+            ],
+            "description": "Yii2 fullcalendar Widgets",
+            "homepage": "http://www.frenzel.net/",
+            "keywords": [
+                "framework",
+                "yii",
+                "yii2 fullcalendar"
+            ],
+            "time": "2014-09-17 08:47:39"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -540,6 +610,52 @@
             "keywords": [
                 "composer",
                 "extension installer",
+                "yii2"
+            ],
+            "time": "2014-10-12 17:09:06"
+        },
+        {
+            "name": "yiisoft/yii2-jui",
+            "version": "2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/yiisoft/yii2-jui.git",
+                "reference": "354ce4155448f9d438397cbccfd7ec984b910245"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/yiisoft/yii2-jui/zipball/354ce4155448f9d438397cbccfd7ec984b910245",
+                "reference": "354ce4155448f9d438397cbccfd7ec984b910245",
+                "shasum": ""
+            },
+            "require": {
+                "bower-asset/jquery-ui": "1.11.*@stable",
+                "yiisoft/yii2": "*"
+            },
+            "type": "yii2-extension",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "yii\\jui\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Qiang Xue",
+                    "email": "qiang.xue@gmail.com"
+                }
+            ],
+            "description": "The Jquery UI extension for the Yii framework",
+            "keywords": [
+                "jQuery UI",
                 "yii2"
             ],
             "time": "2014-10-12 17:09:06"
@@ -896,7 +1012,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "philippfrenzel/yii2fullcalendar": 20
+    },
     "prefer-stable": false,
     "platform": {
         "php": ">=5.4.0"
