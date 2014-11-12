@@ -59,45 +59,45 @@ $events = array();
   $events[] = $Event;*/
   
 $estudios = Estudio::find()->all();
-$count = 0;
-$js= "";
+$js = "";
 $items = [];
-foreach ($estudios as $estudio){
-
-  $JsSelect= "function(start, end) 
-  				{var title = 'testeUpdate';
-		 		 var eventData;
-		 		 eventData = {
-		 			title: title,
-					className: 'eventoPendente',
-		 			start: start,
-		 			end: end}
-				 $('#reservaCal".$estudio->id."').fullCalendar('renderEvent', eventData, true); // stick? = true
-				 $('#reservaCal".$estudio->id."').fullCalendar('unselect');
-				 //$.get('index.php?r=reserva/novareserva', {dados: eventData.title});		
-				}";
-					
-  $JsUpdate = "function(event, delta, revertFunc, jsEvent, ui, view){
-            		var id = 7;
-  					$.get('index.php?r=reserva/actualizareserva', {dados: event.title, idf: id});
-            		}";					
-					
-  $colunas = "{
-			agendaWeek: 'ddd - DD/MM'
-		}";
-
-  $titulo = "{
-			agendaWeek: 'LL'
-		}";					
-
-  $options = array();
-  $options = [
+foreach ($estudios as $estudio) {
+	$JsSelect = "
+function(start, end) {
+	var title = 'testeUpdate';
+	var eventData;
+	eventData = {
+		title: title,
+		className: 'eventoPendente',
+		start: start,
+		end: end
+	}
+	$('#reservaCal$estudio->id').fullCalendar('renderEvent', eventData, true); // stick? = true
+	$('#reservaCal$estudio->id').fullCalendar('unselect');
+	//$.get('index.php?r=reserva/novareserva', {dados: eventData.title});
+}
+";
+	$JsUpdate = "
+function(event, delta, revertFunc, jsEvent, ui, view) {
+	var id = 7;
+  	$.get('index.php?r=reserva/actualizareserva', {dados: event.title, idf: id});
+}
+";
+	$colunas = "
+{
+	agendaWeek: 'ddd - DD/MM'
+}
+";
+	$titulo = "
+{
+	agendaWeek: 'LL'
+}
+";
+	$options = [
   		'class' => 'fullcalendar',
-  		'id' => 'reservaCal'.$estudio->id
-  ];
-  
-  $clOptions = array();
-  $clOptions = [
+  		'id' => 'reservaCal'.$estudio->id,
+  	];
+	$clOptions = [
   		'lang'=>'pt',
   		'defaultView' =>'agendaWeek',
   		'axisFormat' => 'HH:mm',
@@ -114,51 +114,34 @@ foreach ($estudios as $estudio){
   		'selectHelper'=> true,
         'select' => new JsExpression($JsSelect),
 		'eventDrop' => new JsExpression($JsUpdate),
-		'eventResize' => new JsExpression($JsUpdate)
-  ];
+		'eventResize' => new JsExpression($JsUpdate),
+  	];
     $loptions = [];
     $loptions['id'] = 'tab'.$estudio->id;
+    
 	$item = [];
 	$item['label'] = $estudio->nome_estudio;
-	//if ($estudio->nome_estudio == 'ESTiG'){
-		$item['content'] = '<br /><br />'.\yii2fullcalendar\yii2fullcalendar::widget(array('id'=>$estudio->id, 'options'=> $options, 'clientOptions'=> $clOptions, 'events'=> $events));
-	//}else{
-		//$item['content'] = 'XPTO';
-	//}
+	$item['content'] = '<br /><br />'.\yii2fullcalendar\yii2fullcalendar::widget(['options'=> $options, 'clientOptions'=> $clOptions, 'events'=> $events]);
 	$item['linkOptions'] = $loptions;
-	if ($estudio->nome_estudio == 'ESE'){
-		//$item['active'] = true;
-	}
+	
 	array_push($items, $item);
-	
-	/*$js=$js."
-            if( $('#estudiosTab-tab".$count."').is(':visible')){
-                $('#reservaCal".$estudio->id."').fullCalendar('render');
-            }
-            else{
-                setTimeout(function(){ $('#reservaCal".$estudio->id."').fullCalendar('render');},2000);
-            };
-        ";*/
-	
-	$js = $js."$('#".$loptions['id']."').click(function(){
- 									//setTimeout(function(){
-										$('#reservaCal".$estudio->id."').fullCalendar('render');//},5);
-									
-									});";
-	
-	$count ++;
 
-}
+	$js .= "$('#$loptions[id]').on('shown.bs.tab', function (e) {
+		$('#reservaCal$estudio->id').fullCalendar('render');
+	});";
+	
+} // end for loop
 
- echo Tabs::widget([
- 		'items' => $items,
- 		'id' => 'estudiosTab'
- ]);
+// echo widget
+echo Tabs::widget([
+	'items' => $items,
+ 	'id' => 'estudiosTab'
+]);
+
+// register our javascript tabs event handling
+$this->registerJs($js,View::POS_READY);
  
- 
- $this->registerJs($js,View::POS_END);
- 
- ?>
+?>
 
 
 

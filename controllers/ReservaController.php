@@ -33,7 +33,7 @@ class ReservaController extends Controller
     public function actionIndex()
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => reserva::find(),
+            'query' => \app\models\Reserva::find(),
         ]);
 
         return $this->render('index', [
