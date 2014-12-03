@@ -11,4 +11,5 @@ $this->title = 'Reserva';
 	<div><i class="fa fa-check" style="color:red;"></i> <span>Autenticação dummy (E)</span></div>
 	<div><i class="fa fa-check" style="color:red;"></i> <span>Guardar eventos na BD (J&L)</span></div>
 	<div><i class="fa fa-check" style="color:red;"></i> <span>Painel de validação de pedidos</span></div>
+	<div><i class="fa fa-check" style="color:red;"></i> <span>Painel de gestão de estúdios</span></div>
 </div>

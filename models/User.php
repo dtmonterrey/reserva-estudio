@@ -67,6 +67,12 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
      * @return static|null
      */
     public static function findByUsername($username) {
+    	if (YII_ENV_DEV) {
+    		$user = new User();
+    		$user->id = 100;
+    		$user->login = 'admin';
+    		return $user;
+    	}
     	$options = \Yii::$app->params['ldap'];
     	$dc_string = "dc=" . implode(",dc=",$options['dc']);
     	$ou_string = "ou=" . implode(",ou=",$options['ou']);
@@ -131,6 +137,13 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
      * @return boolean if password provided is valid for current user
      */
     public function validatePassword($password) {
+    	if (YII_ENV_DEV) {
+    		if ($password=='admin') {
+    			return true;
+    		} else {
+    			return false;
+    		}
+    	}
     	$options = \Yii::$app->params['ldap'];
     	$dc_string = "dc=" . implode(",dc=",$options['dc']);
     	
