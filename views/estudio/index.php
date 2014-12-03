@@ -22,6 +22,17 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             'id',
             'nome_estudio',
+            [
+            	'label'=>'Responsáveis',
+            	'value'=> function($estudio) {
+            		$responsaveis = '';
+            		foreach ($estudio->responsaveis as $responsavel) {
+            			$responsaveis .= $responsavel . ', ';
+            		}
+            		return $responsaveis;
+            	},
+            	'format'=>'raw',
+            ],
             ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>

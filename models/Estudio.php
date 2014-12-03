@@ -65,8 +65,20 @@ class Estudio extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getResponsavelEstudios()
+    public function getResponsaveis()
     {
-        return $this->hasMany(ResponsavelEstudio::className(), ['id_estudio' => 'id']);
+        return $this->hasMany(User::className(), ['id' => 'id_user'])
+        ->viaTable('responsavel_estudio', ['id_estudio'=>'id']);
     }
 }
+
+
+
+
+
+
+
+
+
+
+
