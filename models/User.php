@@ -20,6 +20,8 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
     public $authKey;
     public $accessToken;
     public $ldap_uid;
+    public $login;
+    public $id_role;
 
     private static $users = [
         '100' => [
@@ -28,6 +30,8 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
             'password' => 'admin',
             'authKey' => 'test100key',
             'accessToken' => '100-token',
+        	'login' => 'admin',
+        	'id_role' => 1,
         ],
         '101' => [
             'id' => '101',
@@ -41,8 +45,7 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
     /**
      * @inheritdoc
      */
-    public static function findIdentity($id)
-    {
+    public static function findIdentity($id) {
         return isset(self::$users[$id]) ? new static(self::$users[$id]) : null;
     }
 
@@ -68,10 +71,7 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
      */
     public static function findByUsername($username) {
     	if (YII_ENV_DEV) {
-    		$user = new User();
-    		$user->id = 100;
-    		$user->login = 'admin';
-    		return $user;
+    		return new static(self::$users[100]);
     	}
     	$options = \Yii::$app->params['ldap'];
     	$dc_string = "dc=" . implode(",dc=",$options['dc']);
@@ -188,7 +188,7 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
     	return [
     	'id' => 'ID',
     	'login' => 'Login',
-    	'id_role' => 'Id Role',
+    	'id_role' => 'ID Role',
     	];
     }
     
@@ -211,7 +211,7 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdRole()
+    public function getRole()
     {
     	return $this->hasOne(Role::className(), ['id' => 'id_role']);
     }
