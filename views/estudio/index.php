@@ -25,11 +25,11 @@ $this->params['breadcrumbs'][] = $this->title;
             [
             	'label'=>'Responsáveis',
             	'value'=> function($estudio) {
-            		$responsaveis = '';
+            		$responsaveis = '<ul>';
             		foreach ($estudio->responsaveis as $responsavel) {
-            			$responsaveis .= $responsavel . ', ';
+            			$responsaveis .= '<li>' . $responsavel->nome . ' - ' . $responsavel->email . '</li>';
             		}
-            		return $responsaveis;
+            		return $responsaveis . '</ul>';
             	},
             	'format'=>'raw',
             ],

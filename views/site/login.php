@@ -36,5 +36,16 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 
     <?php ActiveForm::end(); ?>
+    
+    <div>
+    	<?= YII_ENV_DEV ? 'admin/admin' : ''; ?>
+    </div>
+    
+    <?php
+    	$js = '
+			$("#loginform-username").focus();
+		'; 
+    	$this->registerJs($js);
+    ?>
 
 </div>

@@ -125,7 +125,7 @@ class UserController extends Controller
     	
     	$users = \app\models\User::search($search);
     	
-    	$json = json_encode($users, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
+    	$json = \yii\helpers\Json::encode($users);
     	$response->data = $json;
     	return $response;
     }

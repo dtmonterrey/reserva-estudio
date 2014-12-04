@@ -8,6 +8,8 @@ namespace app\models;
  * @property integer $id
  * @property string $login
  * @property integer $id_role
+ * @property string $nome
+ * @property string $email
  *
  * @property Reserva[] $reservas
  * @property ResponsavelEstudio[] $responsavelEstudios
@@ -19,25 +21,16 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
     public $authKey;
     public $accessToken;
     public $ldap_uid;
-    public $nome;
 
     private static $users = [
-        '100' => [
-            'id' => '100',
+        '-1' => [
+            'id' => '-1',
             'username' => 'admin',
             'password' => 'admin',
             'authKey' => 'test100key',
             'accessToken' => '100-token',
         	'login' => 'admin',
         	'id_role' => 1,
-        	'nome' => 'Administrador',
-        ],
-        '101' => [
-            'id' => '101',
-            'username' => 'demo',
-            'password' => 'demo',
-            'authKey' => 'test101key',
-            'accessToken' => '101-token',
         ],
     ];
 
@@ -88,14 +81,18 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
     		if (ldap_count_entries($connection, $search) == 1) {
 	    		$entries = ldap_get_entries($connection, $search);
     			// ver se este user já existe na base de dados
-    			$user = new User();
+	    		$user = new User();
     			$dbUsers = User::find()->where(['login'=>$username])->all();
     			if (count($dbUsers) > 0) {	// já existe, atualizamos
     				$user = $dbUsers[0];
-    				$user->login = $entries[0]['uid'];
-    				$user->save();
+    				$user->login = $username;
+    				$user->nome = $entries[0]['cn'][0];
+    				$user->email = $entries[0]['mail'][0];
+    				$r = $user->save();
     			} else {	// não existe, adicionamos
     				$user->login = $username;
+    				$user->nome = $entries[0]['cn'][0];
+    				$user->email = $entries[0]['mail'][0];
     				$user->id_role = \app\models\Role::$ROLE_USER;
     				$user->save();
     			}
@@ -108,7 +105,7 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
     	// nao foi possível encontrar o utilizador
     	if (YII_ENV_DEV && $username=='admin') {
     		// estamos em desenvolvimento, devolvemos o admin
-    		return new static(self::$users[100]);
+    		return new static(self::$users[-1]);
     	} else {
     		// falhamos a autenticação
     		return null;
@@ -195,7 +192,9 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
     	return [
     	[['login'], 'required'],
     	[['id_role'], 'integer'],
-    	[['login'], 'string', 'max' => 50]
+    	[['login'], 'string', 'max' => 50],
+    	[['nome'], 'string', 'max' => 128],
+    	[['email'], 'string', 'max' => 128],
     	];
     }
     
@@ -208,6 +207,8 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
     	'id' => 'ID',
     	'login' => 'Login',
     	'id_role' => 'ID Role',
+    	'nome' => 'Nome',
+    	'email' => 'email',
     	];
     }
     
@@ -268,11 +269,12 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
 				$user->login = $entry['uid'][0];
 				$user->username = $entry['uid'][0];
 				$user->nome = $entry['cn'][0];
+				$user->email = $entry['mail'][0];
 				array_push($users, $user);
 			}
 		}
     	return $users;
-    } 
+    }
     
 }
 

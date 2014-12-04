@@ -6,7 +6,9 @@ create table role (
 
 create table user (
     id BIGINT NOT NULL auto_increment,
-    login varchar(50) not null,
+    login VARCHAR(50) NOT NULL,
+    nome VARCHAR(128) NOT NULL,
+    email VARCHAR(128) NOT NULL,
     id_role BIGINT,
     CONSTRAINT pk_user PRIMARY KEY (id),
     CONSTRAINT fk_user_role FOREIGN KEY (id_role) REFERENCES role (id)

@@ -8,6 +8,7 @@ use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use app\models\ResponsavelEstudio;
 
 /**
  * EstudioController implements the CRUD actions for Estudio model.
@@ -119,15 +120,40 @@ class EstudioController extends Controller
         }
     }
     
+    /**
+     * Adiciona o utilizador como responsável ao estúdio
+     * @param unknown $idEstudio
+     * @param unknown $login
+     * @throws NotFoundHttpException
+     * @return \yii\web\Response
+     */
     public function actionAddResponsavel($idEstudio, $login) {
     	if ((!isset($idEstudio) || !isset($login)) && ($idEstudio=='' || $login==NULL)) {
     		throw new NotFoundHttpException('Pedido não disponível!');
     	}
     	
     	$user = \app\models\User::findByUsername($login);
+    	if ($user != null) {
+	    	$re = new ResponsavelEstudio();
+	    	$re->id_estudio = $idEstudio;
+	    	$re->id_user = $user->id;
+	    	$re->save();
+    	}
     	
+    	return $this->redirect(['view', 'id' => $idEstudio]);
+    }
+    
+    public function actionDelResponsavel($idEstudio, $idUser) {
+    	if ((!isset($idEstudio) || !isset($idUser)) && ($idEstudio=='' || $idUser==NULL)) {
+    		throw new NotFoundHttpException('Pedido não disponível!');
+    	}
     	
-    	//return $this->redirect(['view', 'id' => $idEstudio]);
+    	$re = \app\models\ResponsavelEstudio::findAll(['id_estudio'=>$idEstudio, 'id_user'=>$idUser]);
+    	if ($re!=null && count($re)==1) {
+    			$re[0]->delete();
+    	}
+    	 
+    	return $this->redirect(['view', 'id' => $idEstudio]);
     }
     
 }

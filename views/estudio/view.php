@@ -36,10 +36,15 @@ $this->params['breadcrumbs'][] = $this->title;
     
     <h3>Responsáveis</h3>
     
-    <?= Html::ul($model->responsaveis); ?>
-    
     <table id="responsaveis" class="table table-hover table-responsive">
-    <thead><tr><th style="width:20%">Login</th><th>Nome</th></tr></thead>
+    <thead><tr><th style="width:20%">Login</th><th>Nome</th><th style="width:1%"></th></tr></thead>
+    <?php
+    	foreach ($model->responsaveis as $responsavel) {
+    		echo "<tr><td>$responsavel->login</td><td>$responsavel->nome</td><td>";
+    		echo Html::a("remover", ['estudio/del-responsavel', 'idEstudio'=>$model->id, 'idUser'=>$responsavel->id]);
+    		echo "</td></tr>";
+    	} 
+    ?>
     </table>
     
     <hr />
@@ -51,7 +56,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= Html::input('text', 'procurar', '',['id'=>'procurar']); ?>
     
     <table id="procurarResultados" class="table table-hover table-responsive">
-    <thead><tr><th style="width:20%">Login</th><th>Nome</th><th>&nbsp;</th></tr></thead>
+    <thead><tr><th style="width:20%">Login</th><th>Nome</th><th style="width:1%;">&nbsp;</th></tr></thead>
     <tbody></tbody>
     </table>
     
@@ -69,10 +74,10 @@ $("#procurar").on("keyup", function(event) {
 				data = $.parseJSON(data);
 				$.each(data, function(i, item) {
 					rows += "<tr><td>";
-					rows += item.username;
+					rows += item.login;
 					rows += "</td><td>";
 					rows += item.nome;
-					rows += "</td><td><a href=\"?r=estudio/addResponsavel&idEstudio="+idEstudio+"&login="+item.username+"\">adicionar</a></td></tr>";
+					rows += "</td><td><a href=\"?r=estudio/add-responsavel&idEstudio="+idEstudio+"&login="+item.login+"\">adicionar</a></td></tr>";
 				});
 				$("#procurarResultados tbody").html(rows);
 			}
