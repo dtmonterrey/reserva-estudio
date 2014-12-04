@@ -50,7 +50,7 @@ class ResponsavelEstudio extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdEstudio()
+    public function getEstudio()
     {
         return $this->hasOne(Estudio::className(), ['id' => 'id_estudio']);
     }
@@ -58,7 +58,7 @@ class ResponsavelEstudio extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdUser()
+    public function getUser()
     {
         return $this->hasOne(User::className(), ['id' => 'id_user']);
     }

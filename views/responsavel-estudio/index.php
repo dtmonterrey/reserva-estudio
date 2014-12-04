@@ -20,11 +20,9 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-
             'id',
-            'id_user',
-            'id_estudio',
+            'user.nome',
+            'estudio.nome_estudio',
 
             ['class' => 'yii\grid\ActionColumn'],
         ],
