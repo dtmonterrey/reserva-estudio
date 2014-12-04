@@ -38,15 +38,13 @@ AppAsset::register($this);
             if (Yii::$app->user->isGuest) {
             	array_push($menuItems, ['label' => 'Login', 'url' => ['/site/login']]);
             } else {
-				$x = Yii::$app->user->identity;
-				$y = $x->role;
+            	array_push($menuItems, ['label' => 'Reserva', 'url' => ['/reserva/index']]);
+            	array_push($menuItems, ['label' => 'Indisponibilidade', 'url' => ['/indisponibilidade/index']]);
             	if (Yii::$app->user->identity->role == \app\models\Role::findOne(1)) {
-            		// admin user
+            		// user admin
             		array_push($menuItems, ['label' => 'Estudios', 'url' => ['/estudio/index']]);
-            		array_push($menuItems, ['label' => 'Indisponibilidade', 'url' => ['/indisponibilidade/index']]);
             		array_push($menuItems, ['label' => 'Responsavel do Estudio', 'url' => ['/responsavel-estudio/index']]);
             	}
-            	array_push($menuItems, ['label' => 'Reserva', 'url' => ['/reserva/index']]);
             	array_push($menuItems, ['label' => 'Logout (' . Yii::$app->user->identity->username . ')',
             			'url' => ['/site/logout'],
             			'linkOptions' => ['data-method' => 'post']

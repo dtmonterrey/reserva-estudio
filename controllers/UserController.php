@@ -118,4 +118,36 @@ class UserController extends Controller
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
+    
+    public function actionSearch($search = '') {
+    	$response = Yii::$app->response;
+    	$response->format = \yii\web\Response::FORMAT_JSON;
+    	
+    	$users = \app\models\User::search($search);
+    	
+    	$json = json_encode($users, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
+    	$response->data = $json;
+    	return $response;
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

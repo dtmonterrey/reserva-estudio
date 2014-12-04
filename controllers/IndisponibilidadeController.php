@@ -33,7 +33,7 @@ class IndisponibilidadeController extends Controller
     public function actionIndex()
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => indisponibilidade::find(),
+            'query' => Indisponibilidade::find(),
         ]);
 
         return $this->render('index', [

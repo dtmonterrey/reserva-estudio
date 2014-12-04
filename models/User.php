@@ -14,14 +14,12 @@ namespace app\models;
  * @property Role $idRole
  */
 class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
-    public $id;
     public $username;
     public $password;
     public $authKey;
     public $accessToken;
     public $ldap_uid;
-    public $login;
-    public $id_role;
+    public $nome;
 
     private static $users = [
         '100' => [
@@ -32,6 +30,7 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
             'accessToken' => '100-token',
         	'login' => 'admin',
         	'id_role' => 1,
+        	'nome' => 'Administrador',
         ],
         '101' => [
             'id' => '101',
@@ -46,7 +45,14 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
      * @inheritdoc
      */
     public static function findIdentity($id) {
-        return isset(self::$users[$id]) ? new static(self::$users[$id]) : null;
+    	$users = User::findAll($id);
+    	if (count($users) == 1) {
+    		$user = $users[0];
+    		$user->username = $user->login;
+    		return $users[0];
+    	} else {
+        	return isset(self::$users[$id]) ? new static(self::$users[$id]) : null;
+    	}
     }
 
     /**
@@ -70,13 +76,9 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
      * @return static|null
      */
     public static function findByUsername($username) {
-    	if (YII_ENV_DEV) {
-    		return new static(self::$users[100]);
-    	}
     	$options = \Yii::$app->params['ldap'];
     	$dc_string = "dc=" . implode(",dc=",$options['dc']);
     	$ou_string = "ou=" . implode(",ou=",$options['ou']);
-    	
     	$connection = ldap_connect($options['host']);
     	ldap_set_option($connection, LDAP_OPT_PROTOCOL_VERSION, 3);
     	ldap_set_option($connection, LDAP_OPT_REFERRALS, 0);
@@ -84,26 +86,33 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
     	if ($connection) {
     		$search = ldap_search($connection, $ou_string.','.$dc_string, "uid=".$username);
     		if (ldap_count_entries($connection, $search) == 1) {
+	    		$entries = ldap_get_entries($connection, $search);
     			// ver se este user já existe na base de dados
+    			$user = new User();
     			$dbUsers = User::find()->where(['login'=>$username])->all();
     			if (count($dbUsers) > 0) {	// já existe, atualizamos
-    				$dbUser = $dbUsers[0];
-    				$user = new User();
-    				$user->id = $dbUser->id;
-    				$user->login = $dbUser->login;
-    				$user->id_role = $dbUser->id_role;
+    				$user = $dbUsers[0];
+    				$user->login = $entries[0]['uid'];
+    				$user->save();
+    			} else {	// não existe, adicionamos
+    				$user->login = $username;
+    				$user->id_role = \app\models\Role::$ROLE_USER;
     				$user->save();
     			}
-    			$search_entries = ldap_get_entries($connection, $search);
-    			$user = [
-					'id' => '100',
-					'username' => $username,
-					'ldap_uid' => $search_entries[0]['dn'],
-    			];
-                return new static($user);
+    			$user->username = $username;
+				$user->ldap_uid = $entries[0]['dn'];
+                return $user;
     		}
     	}
-    	return null;
+    	
+    	// nao foi possível encontrar o utilizador
+    	if (YII_ENV_DEV && $username=='admin') {
+    		// estamos em desenvolvimento, devolvemos o admin
+    		return new static(self::$users[100]);
+    	} else {
+    		// falhamos a autenticação
+    		return null;
+    	}
     }
 
     /**
@@ -137,16 +146,7 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
      * @return boolean if password provided is valid for current user
      */
     public function validatePassword($password) {
-    	if (YII_ENV_DEV) {
-    		if ($password=='admin') {
-    			return true;
-    		} else {
-    			return false;
-    		}
-    	}
     	$options = \Yii::$app->params['ldap'];
-    	$dc_string = "dc=" . implode(",dc=",$options['dc']);
-    	
     	$connection = ldap_connect($options['host']);
     	ldap_set_option($connection, LDAP_OPT_PROTOCOL_VERSION, 3);
     	ldap_set_option($connection, LDAP_OPT_REFERRALS, 0);
@@ -154,8 +154,27 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
     	// Note: in general it is bad to hide errors, however we're checking for an error below
     	try {
 	    	$bind = @ldap_bind($connection, $this->ldap_uid, $password);
+	    	// a autenticação no LDAP falhou
+	    	if (YII_ENV_DEV && !$bind) {
+	    		// estamos em modo de desenvolvimento
+	    		if ($password=='admin') {
+	    			return true;
+	    		} else {
+	    			return false;
+	    		}
+	    	}
 	    	return $bind;
     	} catch (Exception $e) {
+    		// a autenticação no LDAP falhou
+    		if (YII_ENV_DEV) {
+    			// estamos em modo de desenvolvimento 
+    			if ($password=='admin') {
+    				return true;
+    			} else {
+    				return false;
+    			}
+    		}
+    		// falhamos a autenticação
     		return FALSE;
     	}
     }
@@ -216,4 +235,55 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
     	return $this->hasOne(Role::className(), ['id' => 'id_role']);
     }
     
+    /**
+     * Procurar utilizadores por login e nome
+     * @param unknown $search
+     */
+    public static function search($search = '') {
+		$users = [];
+		if ($search=='') {
+			return $users;
+		}
+    	// ldap search
+    	$options = \Yii::$app->params['ldap'];
+    	$dc_string = "dc=" . implode(",dc=",$options['dc']);
+    	$ou_string = "ou=" . implode(",ou=",$options['ou']);
+    	// connect
+    	$connection = ldap_connect($options['host']);
+    	ldap_set_option($connection, LDAP_OPT_PROTOCOL_VERSION, 3);
+    	ldap_set_option($connection, LDAP_OPT_REFERRALS, 0);
+    	// search
+    	$tokens = '';
+    	foreach (explode(' ', $search) as $word) {
+    		if ($word != '') {
+    			$tokens .= '*' . $word;
+    		}
+    	}
+    	$searchRecords = ldap_search($connection, $ou_string.','.$dc_string, '(|(cn='.$tokens.'*)(uid='.$tokens.'*))');
+		$ldapEntries = ldap_get_entries($connection, $searchRecords);
+		// build list
+		foreach ($ldapEntries as $entry) {
+			if (is_array($entry)) {
+				$user = new User();
+				$user->login = $entry['uid'][0];
+				$user->username = $entry['uid'][0];
+				$user->nome = $entry['cn'][0];
+				array_push($users, $user);
+			}
+		}
+    	return $users;
+    } 
+    
 }
+
+
+
+
+
+
+
+
+
+
+
+

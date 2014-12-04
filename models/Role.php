@@ -12,8 +12,10 @@ use Yii;
  *
  * @property User[] $users
  */
-class Role extends \yii\db\ActiveRecord
-{
+class Role extends \yii\db\ActiveRecord {
+	public static $ROLE_ADMIN = 1;
+	public static $ROLE_USER = 2;
+	
     /**
      * @inheritdoc
      */

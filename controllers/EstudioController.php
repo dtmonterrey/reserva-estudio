@@ -118,4 +118,30 @@ class EstudioController extends Controller
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
+    
+    public function actionAddResponsavel($idEstudio, $login) {
+    	if ((!isset($idEstudio) || !isset($login)) && ($idEstudio=='' || $login==NULL)) {
+    		throw new NotFoundHttpException('Pedido não disponível!');
+    	}
+    	
+    	$user = \app\models\User::findByUsername($login);
+    	
+    	
+    	//return $this->redirect(['view', 'id' => $idEstudio]);
+    }
+    
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
