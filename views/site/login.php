@@ -44,6 +44,8 @@ $this->params['breadcrumbs'][] = $this->title;
     			echo Html::encode('admin/admin');
     			echo '<br /><b>Responsável:</b><br />';
     			echo Html::encode('responsavel/responsavel');
+    			echo '<br /><b>Utilizador:</b><br />';
+    			echo Html::encode('user/user');
     		}
     	?>
     </div>

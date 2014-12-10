@@ -31,6 +31,7 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
             'accessToken' => '100-token',
         	'login' => 'admin',
         	'id_role' => 1,
+        	'nome' => 'Administrador',
         ],
     	'-2' => [
     			'id' => '-2',
@@ -40,7 +41,18 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
     			'accessToken' => '-2-token',
     			'login' => 'responsavel',
     			'id_role' => 2,
+    			'nome' => 'Responsável',
     	],
+   		'-3' => [
+   				'id' => '-3',
+   				'username' => 'user',
+   				'password' => 'user',
+   				'authKey' => 'test-3key',
+   				'accessToken' => '-3-token',
+   				'login' => 'user',
+   				'id_role' => 2,
+   				'nome' => 'Utilizador',
+   		],
     ];
 
     /**
@@ -118,6 +130,9 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
     	} else if (YII_ENV_DEV && $username=='responsavel') {
     		// estamos em desenvolvimento, devolvemos o admin
     		return new static(self::$users[-2]);
+    	} else if (YII_ENV_DEV && $username=='user') {
+    		// estamos em desenvolvimento, devolvemos o admin
+    		return new static(self::$users[-3]);
     	} else {
     		// falhamos a autenticação
     		return null;
@@ -170,6 +185,8 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
 	    			return true;
 	    		} else if ($this->username=='responsavel' && $password=='responsavel') {
 	    			return true;
+	    		} else if ($this->username=='user' && $password=='user') {
+	    			return true;
 	    		} else {
 	    			return false;
 	    		}
@@ -179,16 +196,18 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
     		// a autenticação no LDAP falhou
     		if (YII_ENV_DEV) {
     			// estamos em modo de desenvolvimento 
-    		if ($this->username=='admin' && $password=='admin') {
+    			if ($this->username=='admin' && $password=='admin') {
 	    			return true;
 	    		} else if ($this->username=='responsavel' && $password=='responsavel') {
 	    			return true;
+	    		} else if ($this->username=='user' && $password=='user') {
+		    		return true;
 	    		} else {
-	    			return false;
-	    		}
-    		}
+		    		return false;
+		    	}
     		// falhamos a autenticação
     		return FALSE;
+    		}
     	}
     }
     
