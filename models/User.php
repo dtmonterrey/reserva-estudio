@@ -32,6 +32,15 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
         	'login' => 'admin',
         	'id_role' => 1,
         ],
+    	'-2' => [
+    			'id' => '-2',
+    			'username' => 'responsavel',
+    			'password' => 'responsavel',
+    			'authKey' => 'test-2key',
+    			'accessToken' => '-2-token',
+    			'login' => 'responsavel',
+    			'id_role' => 2,
+    	],
     ];
 
     /**
@@ -106,6 +115,9 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
     	if (YII_ENV_DEV && $username=='admin') {
     		// estamos em desenvolvimento, devolvemos o admin
     		return new static(self::$users[-1]);
+    	} else if (YII_ENV_DEV && $username=='responsavel') {
+    		// estamos em desenvolvimento, devolvemos o admin
+    		return new static(self::$users[-2]);
     	} else {
     		// falhamos a autenticação
     		return null;
@@ -154,7 +166,9 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
 	    	// a autenticação no LDAP falhou
 	    	if (YII_ENV_DEV && !$bind) {
 	    		// estamos em modo de desenvolvimento
-	    		if ($password=='admin') {
+	    		if ($this->username=='admin' && $password=='admin') {
+	    			return true;
+	    		} else if ($this->username=='responsavel' && $password=='responsavel') {
 	    			return true;
 	    		} else {
 	    			return false;
@@ -165,11 +179,13 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
     		// a autenticação no LDAP falhou
     		if (YII_ENV_DEV) {
     			// estamos em modo de desenvolvimento 
-    			if ($password=='admin') {
-    				return true;
-    			} else {
-    				return false;
-    			}
+    		if ($this->username=='admin' && $password=='admin') {
+	    			return true;
+	    		} else if ($this->username=='responsavel' && $password=='responsavel') {
+	    			return true;
+	    		} else {
+	    			return false;
+	    		}
     		}
     		// falhamos a autenticação
     		return FALSE;

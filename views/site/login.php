@@ -38,7 +38,14 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php ActiveForm::end(); ?>
     
     <div>
-    	<?= YII_ENV_DEV ? 'admin/admin' : ''; ?>
+    	<?php 
+    		if (YII_ENV_DEV) {
+    			echo '<b>Administrador:</b><br />';
+    			echo Html::encode('admin/admin');
+    			echo '<br /><b>Responsável:</b><br />';
+    			echo Html::encode('responsavel/responsavel');
+    		}
+    	?>
     </div>
     
     <?php
