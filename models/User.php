@@ -23,36 +23,17 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
     public $ldap_uid;
 
     private static $users = [
-        '-1' => [
-            'id' => '-1',
-            'username' => 'admin',
-            'password' => 'admin',
-            'authKey' => 'test100key',
-            'accessToken' => '100-token',
-        	'login' => 'admin',
-        	'id_role' => 1,
-        	'nome' => 'Administrador',
-        ],
-    	'-2' => [
-    			'id' => '-2',
-    			'username' => 'responsavel',
-    			'password' => 'responsavel',
-    			'authKey' => 'test-2key',
-    			'accessToken' => '-2-token',
-    			'login' => 'responsavel',
-    			'id_role' => 2,
-    			'nome' => 'Responsável',
-    	],
-   		'-3' => [
-   				'id' => '-3',
-   				'username' => 'user',
-   				'password' => 'user',
-   				'authKey' => 'test-3key',
-   				'accessToken' => '-3-token',
-   				'login' => 'user',
-   				'id_role' => 2,
-   				'nome' => 'Utilizador',
-   		],
+   		/*'-1' => [
+   			'id' => '-1',
+   			'username' => 'admin',
+   			'password' => 'admin',
+   			'authKey' => 'test-1key',
+   			'accessToken' => '-1-token',
+   			'login' => 'admin',
+   			'id_role' => 1,
+   			'nome' => 'Administrador',
+   			'email' => 'cti@ipb.pt',
+   		],*/
     ];
 
     /**
@@ -72,14 +53,12 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
     /**
      * @inheritdoc
      */
-    public static function findIdentityByAccessToken($token, $type = null)
-    {
+    public static function findIdentityByAccessToken($token, $type = null) {
         foreach (self::$users as $user) {
             if ($user['accessToken'] === $token) {
                 return new static($user);
             }
         }
-
         return null;
     }
 
@@ -126,13 +105,61 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
     	// nao foi possível encontrar o utilizador
     	if (YII_ENV_DEV && $username=='admin') {
     		// estamos em desenvolvimento, devolvemos o admin
-    		return new static(self::$users[-1]);
+    		$admin = User::findAll(['login'=>'admin']);
+    		if (count($admin) != 1) {
+    			$admin = new User();
+    			$admin->login = 'admin';
+    			$admin->id_role = \app\models\Role::$ROLE_ADMIN;
+    			$admin->nome = 'Administrador Rodartsinimda';
+    			$admin->email = 'cti@ipb.pt';
+    			$admin->username = 'admin';
+    			$admin->password = 'admin';
+    			$admin->authKey = 'authKey-admin';
+    			$admin->accessToken = 'accessToken-admin';
+    			$admin->save();
+    			return $admin;
+    		} else {
+				$admin[0]->username = $username;
+    			return $admin[0];
+    		}
     	} else if (YII_ENV_DEV && $username=='responsavel') {
     		// estamos em desenvolvimento, devolvemos o admin
-    		return new static(self::$users[-2]);
+    		$responsavel = User::findAll(['login'=>'responsavel']);
+    		if (count($responsavel) != 1) {
+    			$responsavel = new User();
+    			$responsavel->login = 'responsavel';
+    			$responsavel->id_role = \app\models\Role::$ROLE_USER;
+    			$responsavel->nome = 'Responsável Levásnopser';
+    			$responsavel->email = 'cti@ipb.pt';
+    			$responsavel->username = 'responsavel';
+    			$responsavel->password = 'responsavel';
+    			$responsavel->authKey = 'authKey-responsavel';
+    			$responsavel->accessToken = 'accessToken-responsavel';
+    			$responsavel->save();
+    			return $responsavel;
+    		} else {
+    			$responsavel[0]->username = $username;
+    			return $responsavel[0];
+    		}
     	} else if (YII_ENV_DEV && $username=='user') {
     		// estamos em desenvolvimento, devolvemos o admin
-    		return new static(self::$users[-3]);
+    		$user = User::findAll(['login'=>'user']);
+    		if (count($user) != 1) {
+    			$user = new User();
+    			$user->login = 'user';
+    			$user->id_role = \app\models\Role::$ROLE_USER;
+    			$user->nome = 'Utilizador Rodazilitu';
+    			$user->email = 'cti@ipb.pt';
+    			$user->username = 'user';
+    			$user->password = 'user';
+    			$user->authKey = 'authKey-user';
+    			$user->accessToken = 'accessToken-user';
+    			$user->save();
+    			return $user;
+    		} else {
+    			$user[0]->username = $username;
+    			return $user[0];
+    		}
     	} else {
     		// falhamos a autenticação
     		return null;

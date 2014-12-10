@@ -16,11 +16,14 @@ use Yii;
  * @property integer $status
  *
  * @property Estudio $idEstudio
- * @property User $idUser
+ * @property User $user
  * @property User $byUser
  */
-class Reserva extends \yii\db\ActiveRecord
-{
+class Reserva extends \yii\db\ActiveRecord {
+	public static $PENDENTE = 0;
+	public static $APROVADA = 1;
+	public static $REJEITADA = -1;
+	
     /**
      * @inheritdoc
      */
@@ -68,9 +71,8 @@ class Reserva extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdUser()
-    {
-        return $this->hasOne(User::className(), ['id' => 'id_user']);
+    public function getUser() {
+        return \app\models\User::findAll($this->id_user);
     }
 
     /**

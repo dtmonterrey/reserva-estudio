@@ -40,7 +40,7 @@ AppAsset::register($this);
             } else {
             	array_push($menuItems, ['label' => 'Reservar Estúdio', 'url' => ['/reserva/index']]);
             	array_push($menuItems, ['label' => 'Indisponibilidades', 'url' => ['/indisponibilidade/index']]);
-            	if (Yii::$app->user->identity->role == \app\models\Role::findOne(1)) {
+            	if (Yii::$app->user->identity->role == \app\models\Role::findOne(\app\models\Role::$ROLE_ADMIN)) {
             		// user admin
             		array_push($menuItems, ['label' => 'Estudios', 'url' => ['/estudio/index']]);
             		array_push($menuItems, ['label' => 'Responsavel do Estudio', 'url' => ['/responsavel-estudio/index']]);

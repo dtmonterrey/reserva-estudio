@@ -33,8 +33,8 @@ create table reserva (
     id BIGINT NOT NULL auto_increment, 
     id_user BIGINT NOT NULL,
     id_estudio BIGINT NOT NULL,
-    inicio DATE NOT NULL, 
-    fim DATE NOT NULL, 
+    inicio DATETIME NOT NULL, 
+    fim DATETIME NOT NULL, 
     by_user BIGINT NOT NULL,
     status INT, 
     CONSTRAINT pk_reserva PRIMARY KEY (id),
@@ -46,16 +46,11 @@ create table reserva (
 create table indisponibilidade (
     id BIGINT NOT NULL auto_increment, 
     id_estudio BIGINT NOT NULL, 
-    inicio DATE,
-    fim DATE, 
+    inicio DATETIME,
+    fim DATETIME, 
     repetir TINYINT,
     CONSTRAINT pk_indisponibilidade PRIMARY KEY (id),
     CONSTRAINT fk_indisponibilidade_estudio FOREIGN KEY(id_estudio) REFERENCES estudio (id)
 );
-CREATE TABLE IF NOT EXISTS `evenement` (
- `id` int(11) NOT NULL AUTO_INCREMENT,
- `title` varchar(255) COLLATE utf8_bin NOT NULL,
- `start` datetime NOT NULL,
- `end` datetime DEFAULT NULL,
- PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+

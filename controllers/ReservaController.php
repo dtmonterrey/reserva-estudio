@@ -3,7 +3,7 @@
 namespace app\Controllers;
 
 use Yii;
-use app\models\reserva;
+use app\models\Reserva;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -80,17 +80,34 @@ class ReservaController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate()
-    {
-        $model = new reserva();
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
-        }
+    public function actionCreate($estudio=-1, $start=-1, $end=-1) {
+    	if ($estudio!=-1 && $start!=-1 && $end!=-1) {
+    		// guardar nova reserva
+    		$model = new Reserva();
+    		$model->id_user = \Yii::$app->user->identity->id;
+    		$model->id_estudio = $estudio;
+    		$model->inicio = date('Y-m-d H:i:s', $start);
+    		$model->fim = date('Y-m-d H:i:s', $end);
+    		$model->by_user = \Yii::$app->user->identity->id;
+    		$model->status = Reserva::$PENDENTE;
+    		$model->save();
+    		// retornar id da reserva
+    		$response = Yii::$app->response;
+    		$response->format = \yii\web\Response::FORMAT_JSON;
+    		$json = \yii\helpers\Json::encode($model);
+    		$response->data = $json;
+    		return $response;
+    	} else {
+	        $model = new reserva();
+	
+	        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+	            return $this->redirect(['view', 'id' => $model->id]);
+	        } else {
+	            return $this->render('create', [
+	                'model' => $model,
+	            ]);
+	        }
+    	}
     }
     
 

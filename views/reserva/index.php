@@ -64,35 +64,60 @@ $items = [];
 foreach ($estudios as $estudio) {
 	$JsSelect = "
 function(start, end) {
-	var title = 'testeUpdate';
-	var eventData;
-	eventData = {
-		title: title,
-		className: 'eventoPendente',
-		start: start,
-		end: end
-	}
-	$('#reservaCal$estudio->id').fullCalendar('renderEvent', eventData, true); // stick? = true
-	$('#reservaCal$estudio->id').fullCalendar('unselect');
-	//$.get('index.php?r=reserva/novareserva', {dados: eventData.title});
+	// registar reserva
+	$.when(
+    	$.get('index.php?r=reserva/create', {estudio:".$estudio->id.",start:start.format('X'), end:end.format('X')})
+    ).then(function(data, textStatus, jqXHR) {
+		var title = '" . (\Yii::$app->user->identity->email) . "';
+		var id = parseInt(JSON.parse(jqXHR.responseJSON)['id']);
+		var evento = {
+	    	id: id,
+			title: title,
+			className: 'eventoPendente',
+			start: start,
+			end: end,
+			overlap: false,
+			url: '?r=reserva/view&id='+id
+		}
+		$('#reservaCal$estudio->id').fullCalendar('renderEvent', evento, true); // stick? = true
+		$('#reservaCal$estudio->id').fullCalendar('unselect');
+	});
 }
-";
+	";
 	$JsUpdate = "
 function(event, delta, revertFunc, jsEvent, ui, view) {
 	var id = 7;
   	$.get('index.php?r=reserva/actualizareserva', {dados: event.title, idf: id});
 }
-";
+	";
+	$JsClick = "
+		function (event, jsEvent, view) {
+   			//$('#reservaCal$estudio->id').css('display', 'none');
+   			alert(event.id + ' - ' + event.title);
+		}
+   	";
 	$colunas = "
 {
 	agendaWeek: 'ddd - DD/MM'
 }
-";
+	";
 	$titulo = "
 {
 	agendaWeek: 'LL'
 }
-";
+	";
+	$events = [];
+	$reservas = \app\models\Reserva::find()->where(['id_estudio'=>$estudio->id])->all();
+	foreach ($reservas as $reserva) {
+		array_push($events, [
+			'id'=>$reserva->id,
+			'title'=>$reserva->getUser()[0]->email, 
+			'start'=>$reserva->inicio, 
+			'end'=>$reserva->fim,
+			'url'=>'?r=reserva/view&id='.$reserva->id,
+			'className'=>($reserva->status==(\app\models\Reserva::$PENDENTE) ? 'eventoPendente' : ''),
+		]);
+	}
 	$options = [
   		'class' => 'fullcalendar',
   		'id' => 'reservaCal'.$estudio->id,
@@ -115,6 +140,7 @@ function(event, delta, revertFunc, jsEvent, ui, view) {
         'select' => new JsExpression($JsSelect),
 		'eventDrop' => new JsExpression($JsUpdate),
 		'eventResize' => new JsExpression($JsUpdate),
+		//'eventClick' => new JsExpression($JsClick),
   	];
     $loptions = [];
     $loptions['id'] = 'tab'.$estudio->id;
@@ -125,7 +151,7 @@ function(event, delta, revertFunc, jsEvent, ui, view) {
 	$item['linkOptions'] = $loptions;
 	
 	array_push($items, $item);
-
+	
 	$js .= "$('#$loptions[id]').on('shown.bs.tab', function (e) {
 		$('#reservaCal$estudio->id').fullCalendar('render');
 	});";
