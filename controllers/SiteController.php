@@ -16,13 +16,20 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout'],
+                /*'only' => ['logout'],*/
                 'rules' => [
+                	// index, contact, about, logout apenas para utilizadores autenticados
                     [
-                        'actions' => ['logout'],
+                        'actions' => ['index', 'contact', 'about', 'logout'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
+                	// login apenas para utilizadores não autenticados
+                	[
+                		'actions' => ['login'],
+                		'allow' => true,
+                		'roles' => ['?'],
+                	],
                 ],
             ],
             'verbs' => [
@@ -48,15 +55,10 @@ class SiteController extends Controller
     }
 
     public function actionIndex() {
-    	if (\Yii::$app->user->isGuest) {
-    		$this->redirect(['site/login']);
-    	} else {
 	        return $this->render('index');
-    	}
     }
 
-    public function actionLogin()
-    {
+    public function actionLogin() {
         if (!\Yii::$app->user->isGuest) {
             return $this->goHome();
         }
