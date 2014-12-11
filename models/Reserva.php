@@ -63,16 +63,15 @@ class Reserva extends \yii\db\ActiveRecord {
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getIdEstudio()
-    {
-        return $this->hasOne(Estudio::className(), ['id' => 'id_estudio']);
+    public function getEstudio() {
+        return \app\models\Estudio::findAll($this->id_estudio)[0];
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getUser() {
-        return \app\models\User::findAll($this->id_user);
+        return \app\models\User::findAll($this->id_user)[0];
     }
 
     /**
