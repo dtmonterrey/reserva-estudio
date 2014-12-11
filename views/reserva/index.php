@@ -111,11 +111,12 @@ function(event, delta, revertFunc, jsEvent, ui, view) {
 	foreach ($reservas as $reserva) {
 		array_push($events, [
 			'id'=>$reserva->id,
-			'title'=>$reserva->getUser()[0]->email, 
+			'title'=>$reserva->getUser()->email, 
 			'start'=>$reserva->inicio, 
 			'end'=>$reserva->fim,
 			'url'=>'?r=reserva/view&id='.$reserva->id,
 			'className'=>($reserva->status==(\app\models\Reserva::$PENDENTE) ? 'eventoPendente' : ''),
+			'overlap'=>false,
 		]);
 	}
 	$options = [

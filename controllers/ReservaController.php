@@ -21,6 +21,7 @@ class ReservaController extends Controller {
                     'delete' => ['post'],
                 ],
             ],
+        	// todos os utilizadores autenticados podem aceder
         	'access' => [
         		'class' => \yii\filters\AccessControl::className(),
         		'rules' => [
@@ -165,4 +166,53 @@ class ReservaController extends Controller {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
+    
+    /**
+     * Aprovar esta reserva
+     * @param unknown $id
+     * @return \yii\web\Response
+     */
+    public function actionAprovar($id) {
+    	$reserva = Reserva::findAll($id);
+    	if (count($reserva) != 1) {
+	    	return $this->goBack();
+    	} else {
+    		$reserva = $reserva[0];
+    		$reserva->status = Reserva::$APROVADA;
+    		$reserva->save();
+    		return $this->goBack();
+    	}
+    }
+    
+    /**
+     * Rejeitar esta reserva
+     * @param unknown $id
+     * @return \yii\web\Response
+     */
+    public function actionRejeitar($id) {
+    	$reserva = Reserva::findAll($id);
+    	if (count($reserva) != 1) {
+    		return $this->goBack();
+    	} else {
+    		$reserva = $reserva[0];
+    		$reserva->status = Reserva::$REJEITADA;
+    		$reserva->save();
+    		return $this->goBack();
+    	}
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
