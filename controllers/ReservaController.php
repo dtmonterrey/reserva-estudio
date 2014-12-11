@@ -12,10 +12,8 @@ use yii\filters\VerbFilter;
 /**
  * ReservaController implements the CRUD actions for reserva model.
  */
-class ReservaController extends Controller
-{
-    public function behaviors()
-    {
+class ReservaController extends Controller {
+    public function behaviors() {
         return [
             'verbs' => [
                 'class' => VerbFilter::className(),
@@ -23,6 +21,15 @@ class ReservaController extends Controller
                     'delete' => ['post'],
                 ],
             ],
+        	'access' => [
+        		'class' => \yii\filters\AccessControl::className(),
+        		'rules' => [
+        			[
+        				'allow' => true,
+        				'roles' => ['@',],
+        			],
+        		],
+        	],
         ];
     }
 

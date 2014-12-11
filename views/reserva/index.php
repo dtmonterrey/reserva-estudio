@@ -65,23 +65,23 @@ foreach ($estudios as $estudio) {
 	$JsSelect = "
 function(start, end) {
 	// registar reserva
-	$.when(
-    	$.get('index.php?r=reserva/create', {estudio:".$estudio->id.",start:start.format('X'), end:end.format('X')})
-    ).then(function(data, textStatus, jqXHR) {
-		var title = '" . (\Yii::$app->user->identity->email) . "';
-		var id = parseInt(JSON.parse(jqXHR.responseJSON)['id']);
-		var evento = {
-	    	id: id,
-			title: title,
-			className: 'eventoPendente',
-			start: start,
-			end: end,
-			overlap: false,
-			url: '?r=reserva/view&id='+id
+	$.when($.get('index.php?r=reserva/create', {estudio:".$estudio->id.",start:start.format('X'), end:end.format('X')}))
+		.then(function(data, textStatus, jqXHR) {
+			var title = '" . ((Yii::$app->user->isGuest) ? '' : \Yii::$app->user->identity->email) . "';
+			var id = parseInt(JSON.parse(jqXHR.responseJSON)['id']);
+			var evento = {
+	    		id: id,
+				title: title,
+				className: 'eventoPendente',
+				start: start,
+				end: end,
+				overlap: false,
+				url: '?r=reserva/view&id='+id
+			}
+			$('#reservaCal$estudio->id').fullCalendar('renderEvent', evento, true); // stick? = true
+			$('#reservaCal$estudio->id').fullCalendar('unselect');
 		}
-		$('#reservaCal$estudio->id').fullCalendar('renderEvent', evento, true); // stick? = true
-		$('#reservaCal$estudio->id').fullCalendar('unselect');
-	});
+	);
 }
 	";
 	$JsUpdate = "
