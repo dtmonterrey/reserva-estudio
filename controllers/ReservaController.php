@@ -175,12 +175,12 @@ class ReservaController extends Controller {
     public function actionAprovar($id) {
     	$reserva = Reserva::findAll($id);
     	if (count($reserva) != 1) {
-	    	return $this->goBack();
+	    	return $this->redirect(['reserva/view', 'id'=>$id]);
     	} else {
     		$reserva = $reserva[0];
     		$reserva->status = Reserva::$APROVADA;
     		$reserva->save();
-    		return $this->goBack();
+    		return $this->redirect(['reserva/view', 'id'=>$id]);
     	}
     }
     
@@ -192,12 +192,12 @@ class ReservaController extends Controller {
     public function actionRejeitar($id) {
     	$reserva = Reserva::findAll($id);
     	if (count($reserva) != 1) {
-    		return $this->goBack();
+    		return $this->redirect(['reserva/view', 'id'=>$id]);
     	} else {
     		$reserva = $reserva[0];
     		$reserva->status = Reserva::$REJEITADA;
     		$reserva->save();
-    		return $this->goBack();
+    		return $this->redirect(['reserva/view', 'id'=>$id]);
     	}
     }
 }

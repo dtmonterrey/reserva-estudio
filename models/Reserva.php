@@ -81,4 +81,26 @@ class Reserva extends \yii\db\ActiveRecord {
     {
         return $this->hasOne(User::className(), ['id' => 'by_user']);
     }
+    
+    public function getStatusAsString() {
+    	if ($this->status == Reserva::$APROVADA) {
+    		return 'Aprovada';
+    	} else if ($this->status == Reserva::$PENDENTE) {
+    		return 'Pendente';
+    	} else if ($this->status == Reserva::$REJEITADA) {
+	    	return 'Rejeitada';
+    	}
+    }
+    
 }
+
+
+
+
+
+
+
+
+
+
+

@@ -62,4 +62,31 @@ class ResponsavelEstudio extends \yii\db\ActiveRecord
     {
         return $this->hasOne(User::className(), ['id' => 'id_user']);
     }
+    
+    /**
+     * Verifica se este user é responsável deste estúdio
+     * @param unknown $id_user
+     * @param unknown $id_estudio
+     */
+    public static function isResponsavel($id_user, $id_estudio) {
+    	$r = ResponsavelEstudio::find()->where(['id_user'=>$id_user])->andWhere(['id_estudio'=>$id_estudio])->all();
+    	if (count($r) != 0) {
+    		return true;
+    	} else {
+    		return false;
+    	}
+    }
+    
 }
+
+
+
+
+
+
+
+
+
+
+
+

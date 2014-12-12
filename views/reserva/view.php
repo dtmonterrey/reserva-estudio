@@ -6,7 +6,7 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\models\reserva */
 
-$this->title = $model->id;
+$this->title = 'Reserva ' . $model->id;
 $this->params['breadcrumbs'][] = ['label' => 'Reservas', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
@@ -15,26 +15,41 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
+        <?php //Html::a('Alterar', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+        <?php
+        	if (Yii::$app->user->identity->id_role == \app\models\Role::$ROLE_ADMIN ||
+        			\app\models\ResponsavelEstudio::isResponsavel(Yii::$app->user->identity->id, $model->id_estudio)) {
+        		echo Html::a('Aprovar', ['aprovar', 'id' => $model->id], ['class' => 'btn btn-success']);
+        		echo ' ';
+        		echo Html::a('Rejeitar', ['rejeitar', 'id' => $model->id], ['class' => 'btn btn-warning']);
+        	}
+        ?>
+        
+        <?php
+         	if (Yii::$app->user->identity->id == $model->id_user) {
+         		echo Html::a('Remover', ['delete', 'id' => $model->id], [
+            			'class' => 'btn btn-danger',
+            			'data' => [
+                			'confirm' => 'Are you sure you want to delete this item?',
+                			'method' => 'post',
+            			],
+        		]);
+         	}
+        ?>
     </p>
 
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
             'id',
-            'id_user',
-            'id_estudio',
+            'user.nome:text:Nome',
+            'estudio.nome_estudio:text:Estúdio',
             'inicio',
             'fim',
-            'by_user',
-            'status',
+            [
+            	'label' => 'Estado',
+            	'value' => $model->getStatusAsString(),
+            ],
         ],
     ]) ?>
 
