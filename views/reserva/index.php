@@ -66,36 +66,42 @@ foreach ($estudios as $estudio) {
 function(start, end) {
 	// registar reserva
 	$.when($.get('index.php?r=reserva/create', {estudio:".$estudio->id.",start:start.format('X'), end:end.format('X')}))
-		.then(function(data, textStatus, jqXHR) {
-			var title = '" . ((Yii::$app->user->isGuest) ? '' : \Yii::$app->user->identity->email) . "';
-			var id = parseInt(JSON.parse(jqXHR.responseJSON)['id']);
-			var evento = {
-	    		id: id,
-				title: title,
-				className: 'eventoPendente',
-				start: start,
-				end: end,
-				overlap: false,
-				url: '?r=reserva/view&id='+id
+		.done(function(data, statusText, jqXHR) {
+			if (typeof jqXHR.responseJSON === 'undefined') {
+				alert('Alguém entretanto reservou este bloco!');
+				$('#reservaCal$estudio->id').fullCalendar('unselect');
+				$('#reservaCal$estudio->id').fullCalendar('refetchEvents');
+			} else {
+				var title = '" . ((Yii::$app->user->isGuest) ? '' : \Yii::$app->user->identity->email) . "';
+				var id = parseInt(JSON.parse(jqXHR.responseJSON)['id']);
+				var evento = {
+	    			id: id,
+					title: title,
+					className: 'eventoPendente',
+					start: start,
+					end: end,
+					overlap: false,
+					url: '?r=reserva/view&id='+id
+				}
+				$('#reservaCal$estudio->id').fullCalendar('renderEvent', evento, true); // stick? = true
+				$('#reservaCal$estudio->id').fullCalendar('unselect');
 			}
-			$('#reservaCal$estudio->id').fullCalendar('renderEvent', evento, true); // stick? = true
-			$('#reservaCal$estudio->id').fullCalendar('unselect');
 		}
 	);
 }
 	";
 	$JsUpdate = "
-function(event, delta, revertFunc, jsEvent, ui, view) {
-	var id = 7;
-  	$.get('index.php?r=reserva/actualizareserva', {dados: event.title, idf: id});
-}
-	";
-	$JsClick = "
-		function (event, jsEvent, view) {
-   			//$('#reservaCal$estudio->id').css('display', 'none');
-   			alert(event.id + ' - ' + event.title);
+		function(event, delta, revertFunc, jsEvent, ui, view) {
+  			$.get('index.php?r=reserva/update', {id:event.id, start:event.start.format('X'), end:event.end.format('X')});
 		}
-   	";
+	";
+	$JsBusinessHours = "
+		{
+    		start: '09:00',
+    		end: '19:00',
+    		dow: [ 1, 2, 3, 4, 5, 6 ]
+		}
+	";
 	$colunas = "
 {
 	agendaWeek: 'ddd - DD/MM'
@@ -106,19 +112,7 @@ function(event, delta, revertFunc, jsEvent, ui, view) {
 	agendaWeek: 'LL'
 }
 	";
-	$events = [];
-	$reservas = \app\models\Reserva::find()->where(['id_estudio'=>$estudio->id])->all();
-	foreach ($reservas as $reserva) {
-		array_push($events, [
-			'id'=>$reserva->id,
-			'title'=>$reserva->getUser()->email, 
-			'start'=>$reserva->inicio, 
-			'end'=>$reserva->fim,
-			'url'=>'?r=reserva/view&id='.$reserva->id,
-			'className'=>($reserva->status==(\app\models\Reserva::$PENDENTE) ? 'eventoPendente' : ''),
-			'overlap'=>false,
-		]);
-	}
+
 	$options = [
   		'class' => 'fullcalendar',
   		'id' => 'reservaCal'.$estudio->id,
@@ -141,14 +135,23 @@ function(event, delta, revertFunc, jsEvent, ui, view) {
         'select' => new JsExpression($JsSelect),
 		'eventDrop' => new JsExpression($JsUpdate),
 		'eventResize' => new JsExpression($JsUpdate),
-		//'eventClick' => new JsExpression($JsClick),
+		'businessHours' => new JsExpression($JsBusinessHours),
+		'constraint' => new JsExpression($JsBusinessHours),
+		'eventSources' => new JsExpression("['?r=reserva/json&idEstudio=$estudio->id']"),
   	];
     $loptions = [];
     $loptions['id'] = 'tab'.$estudio->id;
     
 	$item = [];
 	$item['label'] = $estudio->nome_estudio;
-	$item['content'] = '<br /><br />'.\yii2fullcalendar\yii2fullcalendar::widget(['options'=> $options, 'clientOptions'=> $clOptions, 'events'=> $events]);
+	$item['content'] = '<br /><br />'.\yii2fullcalendar\yii2fullcalendar::widget([
+			'options'=> $options, 
+			'clientOptions'=> $clOptions,  
+			'header'=>[
+					'center'=>'title',
+        			'left'=>'prev,next today',        
+        			'right'=>''
+			]]);
 	$item['linkOptions'] = $loptions;
 	
 	array_push($items, $item);

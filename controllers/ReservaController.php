@@ -90,12 +90,21 @@ class ReservaController extends Controller {
      */
     public function actionCreate($estudio=-1, $start=-1, $end=-1) {
     	if ($estudio!=-1 && $start!=-1 && $end!=-1) {
+    		$inicio = date('Y-m-d H:i:s', $start);
+    		$fim = date('Y-m-d H:i:s', $end);
+    		// validar que não existe reserva em conflito
+    		$registosColisao = Reserva::find()->where(["and", "inicio>='$inicio'", "fim<='$fim'", "id_estudio=$estudio"])
+    			->orWhere(["and", "inicio>='$inicio'", "inicio<'$fim'", "id_estudio=$estudio"])
+    			->orWhere(["and", "fim>'$inicio'", "fim<'$fim'", "id_estudio=$estudio"])->all();
+    		if (count($registosColisao) > 0) {
+    			throw new \yii\web\ConflictHttpException();
+    		}
     		// guardar nova reserva
     		$model = new Reserva();
     		$model->id_user = \Yii::$app->user->identity->id;
     		$model->id_estudio = $estudio;
-    		$model->inicio = date('Y-m-d H:i:s', $start);
-    		$model->fim = date('Y-m-d H:i:s', $end);
+    		$model->inicio = $inicio;
+    		$model->fim = $fim;
     		$model->by_user = \Yii::$app->user->identity->id;
     		$model->status = Reserva::$PENDENTE;
     		$model->save();
@@ -125,16 +134,20 @@ class ReservaController extends Controller {
      * @param string $id
      * @return mixed
      */
-    public function actionUpdate($id)
-    {
+    public function actionUpdate($id, $start=-1, $end=-1) {
         $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($start!=-1 && $end!=-1) {
+        	$model->inicio = date('Y-m-d H:i:s', $start);
+        	$model->fim = date('Y-m-d H:i:s', $end);
+        	$model->save();
         } else {
-            return $this->render('update', [
-                'model' => $model,
-            ]);
+	        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+	            return $this->redirect(['view', 'id' => $model->id]);
+	        } else {
+	            return $this->render('update', [
+	                'model' => $model,
+	            ]);
+	        }
         }
     }
 
@@ -199,6 +212,27 @@ class ReservaController extends Controller {
     		$reserva->save();
     		return $this->redirect(['reserva/view', 'id'=>$id]);
     	}
+    }
+    
+    public function actionJson($idEstudio, $start, $end) {
+    	$events = [];
+    	$reservas = \app\models\Reserva::find()->where(['and', "id_estudio=$idEstudio", "inicio>='$start'", "fim<='$end'"])->all();
+    	foreach ($reservas as $reserva) {
+    		array_push($events, [
+    		'id'=>$reserva->id,
+    		'title'=>$reserva->getUser()->email,
+    		'start'=>$reserva->inicio,
+    		'end'=>$reserva->fim,
+    		'url'=>'?r=reserva/view&id='.$reserva->id,
+    		'className'=>($reserva->status==(\app\models\Reserva::$PENDENTE) ? 'eventoPendente' : ''),
+    		'overlap'=>false,
+    		'editable'=>(($reserva->status==(\app\models\Reserva::$PENDENTE)) && ($reserva->id_user==Yii::$app->user->identity->id) ? true : false),
+    		]);
+    	}
+    	$response = Yii::$app->response;
+    	$response->format = \yii\web\Response::FORMAT_JSON;
+    	$response->data = $events;
+    	return $response;
     }
 }
 
