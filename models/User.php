@@ -69,38 +69,6 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
      * @return static|null
      */
     public static function findByUsername($username) {
-    	$options = \Yii::$app->params['ldap'];
-    	$dc_string = "dc=" . implode(",dc=",$options['dc']);
-    	$ou_string = "ou=" . implode(",ou=",$options['ou']);
-    	$connection = ldap_connect($options['host']);
-    	ldap_set_option($connection, LDAP_OPT_PROTOCOL_VERSION, 3);
-    	ldap_set_option($connection, LDAP_OPT_REFERRALS, 0);
-    	
-    	if ($connection) {
-    		$search = ldap_search($connection, $ou_string.','.$dc_string, "uid=".$username);
-    		if (ldap_count_entries($connection, $search) == 1) {
-	    		$entries = ldap_get_entries($connection, $search);
-    			// ver se este user já existe na base de dados
-	    		$user = new User();
-    			$dbUsers = User::find()->where(['login'=>$username])->all();
-    			if (count($dbUsers) > 0) {	// já existe, atualizamos
-    				$user = $dbUsers[0];
-    				$user->login = $username;
-    				$user->nome = $entries[0]['cn'][0];
-    				$user->email = $entries[0]['mail'][0];
-    				$r = $user->save();
-    			} else {	// não existe, adicionamos
-    				$user->login = $username;
-    				$user->nome = $entries[0]['cn'][0];
-    				$user->email = $entries[0]['mail'][0];
-    				$user->id_role = \app\models\Role::$ROLE_USER;
-    				$user->save();
-    			}
-    			$user->username = $username;
-				$user->ldap_uid = $entries[0]['dn'];
-                return $user;
-    		}
-    	}
     	
     	// nao foi possível encontrar o utilizador
     	if (YII_ENV_DEV && $username=='admin') {
@@ -119,7 +87,7 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
     			$admin->save();
     			return $admin;
     		} else {
-				$admin[0]->username = $username;
+    			$admin[0]->username = $username;
     			return $admin[0];
     		}
     	} else if (YII_ENV_DEV && $username=='responsavel') {
@@ -161,9 +129,43 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
     			return $user[0];
     		}
     	} else {
-    		// falhamos a autenticação
-    		return null;
+    	$options = \Yii::$app->params['ldap'];
+    	$dc_string = "dc=" . implode(",dc=",$options['dc']);
+    	$ou_string = "ou=" . implode(",ou=",$options['ou']);
+    	$connection = ldap_connect($options['host']);
+    	ldap_set_option($connection, LDAP_OPT_PROTOCOL_VERSION, 3);
+    	ldap_set_option($connection, LDAP_OPT_REFERRALS, 0);
+    	
+    	if ($connection) {
+    		$search = ldap_search($connection, $ou_string.','.$dc_string, "uid=".$username);
+    		if (ldap_count_entries($connection, $search) == 1) {
+	    		$entries = ldap_get_entries($connection, $search);
+    			// ver se este user já existe na base de dados
+	    		$user = new User();
+    			$dbUsers = User::find()->where(['login'=>$username])->all();
+    			if (count($dbUsers) > 0) {	// já existe, atualizamos
+    				$user = $dbUsers[0];
+    				$user->login = $username;
+    				$user->nome = $entries[0]['cn'][0];
+    				$user->email = $entries[0]['mail'][0];
+    				$r = $user->save();
+    			} else {	// não existe, adicionamos
+    				$user->login = $username;
+    				$user->nome = $entries[0]['cn'][0];
+    				$user->email = $entries[0]['mail'][0];
+    				$user->id_role = \app\models\Role::$ROLE_USER;
+    				$user->save();
+    			}
+    			$user->username = $username;
+				$user->ldap_uid = $entries[0]['dn'];
+                return $user;
+    		}
     	}
+    	}
+    	
+    	
+    	
+    	
     }
 
     /**
@@ -197,45 +199,50 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
      * @return boolean if password provided is valid for current user
      */
     public function validatePassword($password) {
-    	$options = \Yii::$app->params['ldap'];
-    	$connection = ldap_connect($options['host']);
-    	ldap_set_option($connection, LDAP_OPT_PROTOCOL_VERSION, 3);
-    	ldap_set_option($connection, LDAP_OPT_REFERRALS, 0);
     	
-    	// Note: in general it is bad to hide errors, however we're checking for an error below
-    	try {
-	    	$bind = @ldap_bind($connection, $this->ldap_uid, $password);
-	    	// a autenticação no LDAP falhou
-	    	if (YII_ENV_DEV && !$bind) {
-	    		// estamos em modo de desenvolvimento
-	    		if ($this->username=='admin' && $password=='admin') {
-	    			return true;
-	    		} else if ($this->username=='responsavel' && $password=='responsavel') {
-	    			return true;
-	    		} else if ($this->username=='user' && $password=='user') {
-	    			return true;
-	    		} else {
-	    			return false;
-	    		}
-	    	}
-	    	return $bind;
-    	} catch (Exception $e) {
-    		// a autenticação no LDAP falhou
-    		if (YII_ENV_DEV) {
-    			// estamos em modo de desenvolvimento 
-    			if ($this->username=='admin' && $password=='admin') {
-	    			return true;
-	    		} else if ($this->username=='responsavel' && $password=='responsavel') {
-	    			return true;
-	    		} else if ($this->username=='user' && $password=='user') {
-		    		return true;
-	    		} else {
-		    		return false;
-		    	}
+    	// a autenticação no LDAP falhou
+    	if (YII_ENV_DEV) {
+    		// estamos em modo de desenvolvimento
+    		if ($this->username=='admin' && $password=='admin') {
+    			return true;
+    		} else if ($this->username=='responsavel' && $password=='responsavel') {
+    			return true;
+    		} else if ($this->username=='user' && $password=='user') {
+    			return true;
+    		} else {
+    			return false;
+    		}
     		// falhamos a autenticação
     		return FALSE;
+    	}else{
+    		$options = \Yii::$app->params['ldap'];
+    		$connection = ldap_connect($options['host']);
+    		ldap_set_option($connection, LDAP_OPT_PROTOCOL_VERSION, 3);
+    		ldap_set_option($connection, LDAP_OPT_REFERRALS, 0);
+    		 
+    		// Note: in general it is bad to hide errors, however we're checking for an error below
+    		try {
+    			$bind = @ldap_bind($connection, $this->ldap_uid, $password);
+    			// a autenticação no LDAP falhou
+    			if (YII_ENV_DEV && !$bind) {
+    				// estamos em modo de desenvolvimento
+    				if ($this->username=='admin' && $password=='admin') {
+    					return true;
+    				} else if ($this->username=='responsavel' && $password=='responsavel') {
+    					return true;
+    				} else if ($this->username=='user' && $password=='user') {
+    					return true;
+    				} else {
+    					return false;
+    				}
+    			}
+    			return $bind;
+    		} catch (Exception $e) {
+    			return false;
     		}
     	}
+    	
+    	
     }
     
     /**
